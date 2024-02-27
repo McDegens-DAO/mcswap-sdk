@@ -9,3 +9,5 @@ export function serializeToU8ByteArray(value: number): number[] {
     }
     return byteArray;
 }
+
+export const METADATA_PROGRAM_ID = "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s";

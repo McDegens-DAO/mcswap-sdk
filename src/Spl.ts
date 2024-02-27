@@ -38,40 +38,6 @@ const PROGRAM_STATE = BufferLayout.struct<ProgramState>([
     publicKey("mcdegens_treasury"),
 ]);
 
-type SwapState = {
-    is_initialized: number;
-    utime: Uint8Array;
-    initializer: Uint8Array;
-    token1_mint: Uint8Array;
-    token1_amount: Uint8Array;
-    temp_token1_account: Uint8Array;
-    token2_mint: Uint8Array;
-    token2_amount: Uint8Array;
-    temp_token2_account: Uint8Array;
-    taker: Uint8Array;
-    token3_mint: Uint8Array;
-    token3_amount: Uint8Array;
-    token4_mint: Uint8Array;
-    token4_amount: Uint8Array;
-}
-
-const SWAP_STATE = BufferLayout.struct<SwapState>([
-    BufferLayout.u8("is_initialized"),
-    uint64("utime"),  // HERE
-    publicKey("initializer"),
-    publicKey("token1_mint"),
-    uint64("token1_amount"),
-    publicKey("temp_token1_account"),
-    publicKey("token2_mint"),
-    uint64("token2_amount"),
-    publicKey("temp_token2_account"),
-    publicKey("taker"),
-    publicKey("token3_mint"),
-    uint64("token3_amount"),
-    publicKey("token4_mint"),
-    uint64("token4_amount"),
-]);
-
 type swapRequest = {
     provider: PhantomWalletAdapter | SolflareWalletAdapter;
     connection: Connection;

@@ -7,7 +7,8 @@
     "url": "https://github.com/LukasDeco/mcswap"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublish": "tsc"
   },
   "keywords": [
     "Solana",
@@ -20,7 +21,7 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@metaplex-foundation/mpl-token-metadata": "^2.13.0",
+    "@metaplex-foundation/mpl-token-metadata": "^3.2.0",
     "@solana/buffer-layout": "^4.0.1",
     "@solana/spl-token": "^0.4.1",
     "@solana/wallet-adapter-wallets": "^0.19.26",
