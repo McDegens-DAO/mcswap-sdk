@@ -50,6 +50,11 @@ const publicKey = (property = "publicKey") => {
 const uint64 = (property = "uint64") => {
     return BufferLayout.blob(8, property);
 };
+const pNFTSwapProgramId = new solanaWeb3.PublicKey("2bY36scRMEUJHJToVGjJ2uY8PdSrRPr73siNwGbv1ZNT");
+const splATAProgramId = new solanaWeb3.PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
+const mplAuthRulesProgramId = new solanaWeb3.PublicKey("auth9SigNpDKz4sJJ1DfCTuZrZNSAgh9sFD3rboVmgg");
+const mplAuthRulesAccount = new solanaWeb3.PublicKey("eBJLFYPxJmMGKuFwpDWkzxZeUrad92kZRC5BJLpzyT9");
+const metaplexProgramKey = new solanaWeb3.PublicKey(mplToken.MPL_TOKEN_METADATA_PROGRAM_ID);
 const PROGRAM_STATE = BufferLayout.struct([
     BufferLayout.u8("is_initialized"),
     publicKey("pickle_mint"),
@@ -61,19 +66,7 @@ const PROGRAM_STATE = BufferLayout.struct([
 ]);
 const SWAP_STATE = BufferLayout.struct([
     BufferLayout.u8("is_initialized"),
-    uint64("utime"), // HERE
     publicKey("initializer"),
-    publicKey("token1_mint"),
-    uint64("token1_amount"),
-    publicKey("temp_token1_account"),
-    publicKey("token2_mint"),
-    uint64("token2_amount"),
-    publicKey("temp_token2_account"),
-    publicKey("taker"),
-    publicKey("token3_mint"),
-    uint64("token3_amount"),
-    publicKey("token4_mint"),
-    uint64("token4_amount"),
     publicKey("initializer_mint"),
     publicKey("swap_mint"),
     publicKey("swap_token_mint"),
@@ -91,10 +84,6 @@ function InitializeSwap(swap) {
         if (takerMint == "11111111111111111111111111111111") {
             isSwap = false;
         }
-        let pNFTSwapProgramId = new solanaWeb3.PublicKey("2bY36scRMEUJHJToVGjJ2uY8PdSrRPr73siNwGbv1ZNT");
-        let splATAProgramId = new solanaWeb3.PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
-        let mplAuthRulesProgramId = new solanaWeb3.PublicKey("auth9SigNpDKz4sJJ1DfCTuZrZNSAgh9sFD3rboVmgg");
-        let mplAuthRulesAccount = new solanaWeb3.PublicKey("eBJLFYPxJmMGKuFwpDWkzxZeUrad92kZRC5BJLpzyT9");
         let programStatePDA = solanaWeb3.PublicKey.findProgramAddressSync([Buffer.from("program-state")], pNFTSwapProgramId);
         let programLoaded = false;
         let programState = {
@@ -131,19 +120,19 @@ function InitializeSwap(swap) {
         let swapVaultPDA = solanaWeb3.PublicKey.findProgramAddressSync([Buffer.from("swap-vault")], pNFTSwapProgramId);
         let swapStatePDA = solanaWeb3.PublicKey.findProgramAddressSync([Buffer.from("swap-state"), new solanaWeb3.PublicKey(mint).toBytes(), new solanaWeb3.PublicKey(takerMint).toBytes()], pNFTSwapProgramId);
         let providerMintATA = yield splToken.getAssociatedTokenAddress(new solanaWeb3.PublicKey(mint), provider.publicKey, false, splToken.TOKEN_PROGRAM_ID, splToken.ASSOCIATED_TOKEN_PROGRAM_ID);
-        let tokenMetadataPDA = solanaWeb3.PublicKey.findProgramAddressSync([Buffer.from("metadata"), mplToken.PROGRAM_ID.toBytes(), new solanaWeb3.PublicKey(mint).toBytes()], mplToken.PROGRAM_ID);
-        let tokenMasterEditionPDA = solanaWeb3.PublicKey.findProgramAddressSync([Buffer.from("metadata"), mplToken.PROGRAM_ID.toBytes(), new solanaWeb3.PublicKey(mint).toBytes(), Buffer.from("edition")], mplToken.PROGRAM_ID);
+        let tokenMetadataPDA = solanaWeb3.PublicKey.findProgramAddressSync([Buffer.from("metadata"), metaplexProgramKey.toBytes(), new solanaWeb3.PublicKey(mint).toBytes()], metaplexProgramKey);
+        let tokenMasterEditionPDA = solanaWeb3.PublicKey.findProgramAddressSync([Buffer.from("metadata"), metaplexProgramKey.toBytes(), new solanaWeb3.PublicKey(mint).toBytes(), Buffer.from("edition")], metaplexProgramKey);
         let tokenDestinationATA = yield splToken.getAssociatedTokenAddress(new solanaWeb3.PublicKey(mint), swapVaultPDA[0], true, splToken.TOKEN_PROGRAM_ID, splToken.ASSOCIATED_TOKEN_PROGRAM_ID);
         let tokenRecordPDA = solanaWeb3.PublicKey.findProgramAddressSync([Buffer.from("metadata"),
-            mplToken.PROGRAM_ID.toBytes(),
+            metaplexProgramKey.toBytes(),
             new solanaWeb3.PublicKey(mint).toBytes(),
             Buffer.from("token_record"),
-            new solanaWeb3.PublicKey(providerMintATA).toBytes()], mplToken.PROGRAM_ID);
+            new solanaWeb3.PublicKey(providerMintATA).toBytes()], metaplexProgramKey);
         let tokenRecordDesinationPDA = solanaWeb3.PublicKey.findProgramAddressSync([Buffer.from("metadata"),
-            mplToken.PROGRAM_ID.toBytes(),
+            metaplexProgramKey.toBytes(),
             new solanaWeb3.PublicKey(mint).toBytes(),
             Buffer.from("token_record"),
-            new solanaWeb3.PublicKey(tokenDestinationATA).toBytes()], mplToken.PROGRAM_ID);
+            new solanaWeb3.PublicKey(tokenDestinationATA).toBytes()], metaplexProgramKey);
         let createTakerMintATA = false;
         let takerMintATA = null;
         let createTakerMintATAIx = null;
@@ -235,7 +224,7 @@ function InitializeSwap(swap) {
                 { pubkey: solanaWeb3.SYSVAR_INSTRUCTIONS_PUBKEY, isSigner: false, isWritable: false }, // 12
                 { pubkey: splToken.TOKEN_PROGRAM_ID, isSigner: false, isWritable: false }, // 13
                 { pubkey: splATAProgramId, isSigner: false, isWritable: false }, // 14
-                { pubkey: mplToken.PROGRAM_ID, isSigner: false, isWritable: false }, // 15
+                { pubkey: metaplexProgramKey, isSigner: false, isWritable: false }, // 15
                 { pubkey: mplAuthRulesProgramId, isSigner: false, isWritable: false }, // 16
                 { pubkey: mplAuthRulesAccount, isSigner: false, isWritable: false }, // 17
                 { pubkey: devTreasury, isSigner: false, isWritable: true }, // 18
@@ -352,30 +341,12 @@ function SwapPNFTs(swap) {
         }
         let swapVaultPDA = solanaWeb3.PublicKey.findProgramAddressSync([Buffer.from("swap-vault")], pNFTSwapProgramId);
         let swapStatePDA = solanaWeb3.PublicKey.findProgramAddressSync([Buffer.from("swap-state"), new solanaWeb3.PublicKey(mint).toBytes(), new solanaWeb3.PublicKey(takerMint).toBytes()], pNFTSwapProgramId);
-        let swapStateLoaded = false;
-        let swapState = {
-            data: new Buffer(""),
-            executable: false,
-            lamports: 0,
-            owner: swapStatePDA[0],
-        };
-        yield connection.getAccountInfo(swapStatePDA[0])
-            .then(function (response) {
-            if (response != null) {
-                swapState = response;
-                swapStateLoaded = true;
-            }
-        })
-            .catch(function (error) {
-            error = JSON.stringify(error);
-            error = JSON.parse(error);
-            return;
-        });
+        const swapState = yield connection.getAccountInfo(swapStatePDA[0]);
         let initializer = null;
         let initializerTokenMint = null;
         let takerTokenMint = null;
         let swapTokenMint = null;
-        if (swapStateLoaded) {
+        if (swapState != null) {
             const encodedSwapStateData = swapState.data;
             const decodedSwapStateData = SWAP_STATE.decode(encodedSwapStateData);
             initializer = new web3_js_1.PublicKey(decodedSwapStateData.initializer);
@@ -387,8 +358,8 @@ function SwapPNFTs(swap) {
             return;
         }
         let vaultTokenMintATA = yield splToken.getAssociatedTokenAddress(initializerTokenMint, swapVaultPDA[0], true, splToken.TOKEN_PROGRAM_ID, splToken.ASSOCIATED_TOKEN_PROGRAM_ID);
-        let tokenMetadataPDA = solanaWeb3.PublicKey.findProgramAddressSync([Buffer.from("metadata"), mplToken.PROGRAM_ID.toBytes(), initializerTokenMint.toBytes()], mplToken.PROGRAM_ID);
-        let tokenMasterEditionPDA = solanaWeb3.PublicKey.findProgramAddressSync([Buffer.from("metadata"), mplToken.PROGRAM_ID.toBytes(), initializerTokenMint.toBytes(), Buffer.from("edition")], mplToken.PROGRAM_ID);
+        let tokenMetadataPDA = solanaWeb3.PublicKey.findProgramAddressSync([Buffer.from("metadata"), metaplexProgramKey.toBytes(), initializerTokenMint.toBytes()], metaplexProgramKey);
+        let tokenMasterEditionPDA = solanaWeb3.PublicKey.findProgramAddressSync([Buffer.from("metadata"), metaplexProgramKey.toBytes(), initializerTokenMint.toBytes(), Buffer.from("edition")], metaplexProgramKey);
         let tokenDestinationATA = yield splToken.getAssociatedTokenAddress(initializerTokenMint, provider.publicKey, false, splToken.TOKEN_PROGRAM_ID, splToken.ASSOCIATED_TOKEN_PROGRAM_ID);
         let createTokenDestinationATA = null;
         let createTokenDestinationATAIx = null;
@@ -408,29 +379,29 @@ function SwapPNFTs(swap) {
             return;
         });
         let tokenRecordPDA = solanaWeb3.PublicKey.findProgramAddressSync([Buffer.from("metadata"),
-            mplToken.PROGRAM_ID.toBytes(),
+            metaplexProgramKey.toBytes(),
             initializerTokenMint.toBytes(),
             Buffer.from("token_record"),
-            vaultTokenMintATA.toBytes()], mplToken.PROGRAM_ID);
+            vaultTokenMintATA.toBytes()], metaplexProgramKey);
         let tokenRecordDesinationPDA = solanaWeb3.PublicKey.findProgramAddressSync([Buffer.from("metadata"),
-            mplToken.PROGRAM_ID.toBytes(),
+            metaplexProgramKey.toBytes(),
             initializerTokenMint.toBytes(),
             Buffer.from("token_record"),
-            tokenDestinationATA.toBytes()], mplToken.PROGRAM_ID);
+            tokenDestinationATA.toBytes()], metaplexProgramKey);
         let takerTokenMintATA = yield splToken.getAssociatedTokenAddress(takerTokenMint, provider.publicKey, false, splToken.TOKEN_PROGRAM_ID, splToken.ASSOCIATED_TOKEN_PROGRAM_ID);
-        let takerTokenMetadataPDA = solanaWeb3.PublicKey.findProgramAddressSync([Buffer.from("metadata"), mplToken.PROGRAM_ID.toBytes(), takerTokenMint.toBytes()], mplToken.PROGRAM_ID);
-        let takerTokenMasterEditionPDA = solanaWeb3.PublicKey.findProgramAddressSync([Buffer.from("metadata"), mplToken.PROGRAM_ID.toBytes(), takerTokenMint.toBytes(), Buffer.from("edition")], mplToken.PROGRAM_ID);
+        let takerTokenMetadataPDA = solanaWeb3.PublicKey.findProgramAddressSync([Buffer.from("metadata"), metaplexProgramKey.toBytes(), takerTokenMint.toBytes()], metaplexProgramKey);
+        let takerTokenMasterEditionPDA = solanaWeb3.PublicKey.findProgramAddressSync([Buffer.from("metadata"), metaplexProgramKey.toBytes(), takerTokenMint.toBytes(), Buffer.from("edition")], metaplexProgramKey);
         let takerTokenDestinationATA = yield splToken.getAssociatedTokenAddress(takerTokenMint, initializer, false, splToken.TOKEN_PROGRAM_ID, splToken.ASSOCIATED_TOKEN_PROGRAM_ID);
         let takerTokenRecordPDA = solanaWeb3.PublicKey.findProgramAddressSync([Buffer.from("metadata"),
-            mplToken.PROGRAM_ID.toBytes(),
+            metaplexProgramKey.toBytes(),
             takerTokenMint.toBytes(),
             Buffer.from("token_record"),
-            takerTokenMintATA.toBytes()], mplToken.PROGRAM_ID);
+            takerTokenMintATA.toBytes()], metaplexProgramKey);
         let takerTokenRecordDesinationPDA = solanaWeb3.PublicKey.findProgramAddressSync([Buffer.from("metadata"),
-            mplToken.PROGRAM_ID.toBytes(),
+            metaplexProgramKey.toBytes(),
             takerTokenMint.toBytes(),
             Buffer.from("token_record"),
-            takerTokenDestinationATA.toBytes()], mplToken.PROGRAM_ID);
+            takerTokenDestinationATA.toBytes()], metaplexProgramKey);
         let swapTokenATA = yield splToken.getAssociatedTokenAddress(swapTokenMint, provider.publicKey, false, splToken.TOKEN_PROGRAM_ID, splToken.ASSOCIATED_TOKEN_PROGRAM_ID);
         let initializerSwapTokenATA = yield splToken.getAssociatedTokenAddress(swapTokenMint, initializer, false, splToken.TOKEN_PROGRAM_ID, splToken.ASSOCIATED_TOKEN_PROGRAM_ID);
         var totalSize = 1;
@@ -466,7 +437,7 @@ function SwapPNFTs(swap) {
                 { pubkey: solanaWeb3.SYSVAR_INSTRUCTIONS_PUBKEY, isSigner: false, isWritable: false }, // 22
                 { pubkey: splToken.TOKEN_PROGRAM_ID, isSigner: false, isWritable: false }, // 23
                 { pubkey: splATAProgramId, isSigner: false, isWritable: false }, // 25
-                { pubkey: mplToken.PROGRAM_ID, isSigner: false, isWritable: false }, // 25
+                { pubkey: metaplexProgramKey, isSigner: false, isWritable: false }, // 25
                 { pubkey: mplAuthRulesProgramId, isSigner: false, isWritable: false }, // 26
                 { pubkey: mplAuthRulesAccount, isSigner: false, isWritable: false }, // 27
                 { pubkey: devTreasury, isSigner: false, isWritable: true }, // 28
@@ -505,6 +476,85 @@ function SwapPNFTs(swap) {
         }
         const swapPNFTsTx = new solanaWeb3.VersionedTransaction(messageV0);
         let signedTx = yield provider.signTransaction(swapPNFTsTx);
+        return yield connection.sendTransaction(signedTx);
+    });
+}
+function ReverseSwap(swap, swapMint) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { provider, connection, mint, } = swap;
+        const publicKey = provider.publicKey;
+        if (!publicKey) {
+            throw new Error("wallet pubkey is missing from swap request");
+        }
+        let swapVaultPDA = solanaWeb3.PublicKey.findProgramAddressSync([Buffer.from("swap-vault")], pNFTSwapProgramId);
+        let swapStatePDA = solanaWeb3.PublicKey.findProgramAddressSync([Buffer.from("swap-state"), new solanaWeb3.PublicKey(mint).toBytes(), new solanaWeb3.PublicKey(swapMint).toBytes()], pNFTSwapProgramId);
+        const swapState = yield connection.getAccountInfo(swapStatePDA[0]);
+        if (swapState != null) {
+            const encodedSwapStateData = swapState.data;
+            const decodedSwapStateData = SWAP_STATE.decode(encodedSwapStateData);
+        }
+        else {
+            return;
+        }
+        let vaultMintATA = yield splToken.getAssociatedTokenAddress(new solanaWeb3.PublicKey(mint), swapVaultPDA[0], true, splToken.TOKEN_PROGRAM_ID, splToken.ASSOCIATED_TOKEN_PROGRAM_ID);
+        let tokenMetadataPDA = solanaWeb3.PublicKey.findProgramAddressSync([Buffer.from("metadata"), metaplexProgramKey.toBytes(), new solanaWeb3.PublicKey(mint).toBytes()], metaplexProgramKey);
+        let tokenMasterEditionPDA = solanaWeb3.PublicKey.findProgramAddressSync([Buffer.from("metadata"), metaplexProgramKey.toBytes(), new solanaWeb3.PublicKey(mint).toBytes(), Buffer.from("edition")], metaplexProgramKey);
+        let tokenDestinationATA = yield splToken.getAssociatedTokenAddress(new solanaWeb3.PublicKey(mint), provider.publicKey, false, splToken.TOKEN_PROGRAM_ID, splToken.ASSOCIATED_TOKEN_PROGRAM_ID);
+        let tokenRecordPDA = solanaWeb3.PublicKey.findProgramAddressSync([Buffer.from("metadata"),
+            new solanaWeb3.PublicKey(metaplexProgramKey).toBytes(),
+            new solanaWeb3.PublicKey(mint).toBytes(),
+            Buffer.from("token_record"),
+            new solanaWeb3.PublicKey(vaultMintATA).toBytes()], metaplexProgramKey);
+        let tokenRecordDesinationPDA = solanaWeb3.PublicKey.findProgramAddressSync([Buffer.from("metadata"),
+            new solanaWeb3.PublicKey(metaplexProgramKey).toBytes(),
+            new solanaWeb3.PublicKey(mint).toBytes(),
+            Buffer.from("token_record"),
+            new solanaWeb3.PublicKey(tokenDestinationATA).toBytes()], metaplexProgramKey);
+        var totalSize = 1 + 32;
+        var uarray = new Uint8Array(totalSize);
+        let counter = 0;
+        uarray[counter++] = 2; // 2 = nft_swap ReverseSwap instruction
+        let swapMintb58 = bs58.decode(swapMint);
+        var arr = Array.prototype.slice.call(Buffer.from(swapMintb58), 0);
+        for (let i = 0; i < arr.length; i++) {
+            uarray[counter++] = arr[i];
+        }
+        const reverseSwapIx = new solanaWeb3.TransactionInstruction({
+            programId: pNFTSwapProgramId,
+            data: Buffer.from(uarray),
+            keys: [
+                { pubkey: provider.publicKey, isSigner: true, isWritable: true }, // 0
+                { pubkey: swapVaultPDA[0], isSigner: false, isWritable: true }, // 1
+                { pubkey: swapStatePDA[0], isSigner: false, isWritable: true }, // 2
+                { pubkey: vaultMintATA, isSigner: false, isWritable: true }, // 3
+                { pubkey: new solanaWeb3.PublicKey(mint), isSigner: false, isWritable: false }, // 4
+                { pubkey: tokenMetadataPDA[0], isSigner: false, isWritable: true }, // 5
+                { pubkey: tokenMasterEditionPDA[0], isSigner: false, isWritable: false }, // 6
+                { pubkey: tokenDestinationATA, isSigner: false, isWritable: true }, // 7
+                { pubkey: tokenRecordPDA[0], isSigner: false, isWritable: true }, // 8
+                { pubkey: tokenRecordDesinationPDA[0], isSigner: false, isWritable: true }, // 9
+                { pubkey: solanaWeb3.SystemProgram.programId, isSigner: false, isWritable: false }, // 10
+                { pubkey: solanaWeb3.SYSVAR_INSTRUCTIONS_PUBKEY, isSigner: false, isWritable: false }, // 11
+                { pubkey: splToken.TOKEN_PROGRAM_ID, isSigner: false, isWritable: false }, // 12
+                { pubkey: splATAProgramId, isSigner: false, isWritable: false }, // 13
+                { pubkey: metaplexProgramKey, isSigner: false, isWritable: false }, // 14
+                { pubkey: mplAuthRulesProgramId, isSigner: false, isWritable: false }, // 15
+                { pubkey: mplAuthRulesAccount, isSigner: false, isWritable: false }, // 16
+            ]
+        });
+        const computePriceIx = solanaWeb3.ComputeBudgetProgram.setComputeUnitPrice({
+            microLamports: 1,
+        });
+        const computeLimitIx = solanaWeb3.ComputeBudgetProgram.setComputeUnitLimit({
+            units: 250000,
+        });
+        let messageV0 = new solanaWeb3.TransactionMessage({
+            payerKey: provider.publicKey,
+            recentBlockhash: (yield connection.getRecentBlockhash('confirmed')).blockhash,
+            instructions: [computePriceIx, computeLimitIx, reverseSwapIx],
+        }).compileToV0Message([]);
+        const reverseSwapTx = new solanaWeb3.VersionedTransaction(messageV0);
+        let signedTx = yield provider.signTransaction(reverseSwapTx);
         return yield connection.sendTransaction(signedTx);
     });
 }
