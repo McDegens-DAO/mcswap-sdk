@@ -1,15 +1,15 @@
 {
   "name": "mcswap",
-  "version": "0.0.3-alpha",
+  "version": "0.0.4-alpha",
   "description": "",
   "repository": {
     "url": "https://github.com/LukasDeco/mcswap"
   },
   "type": "commonjs",
   "exports": {
-    "./cnft": "./src/CNft.js",
-    "./pnft": "./src/PNft.js",
-    "./spl": "./src/Spl.js"
+    "cnft": "./src/CNft.js",
+    "pnft": "./src/PNft.js",
+    "spl": "./src/Spl.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
