@@ -3,13 +3,28 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "repository": {
+    "url": "https://github.com/LukasDeco/mcswap"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "Solana",
+    "McSwap"
+  ],
+  "author": "Lukas deConantsesznak",
   "license": "ISC",
   "devDependencies": {
+    "@types/bs58": "^4.0.4",
     "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@metaplex-foundation/mpl-token-metadata": "^2.13.0",
+    "@solana/buffer-layout": "^4.0.1",
+    "@solana/spl-token": "^0.4.1",
+    "@solana/wallet-adapter-wallets": "^0.19.26",
+    "@solana/web3.js": "^1.90.0",
+    "bs58": "^5.0.0"
   }
 }
