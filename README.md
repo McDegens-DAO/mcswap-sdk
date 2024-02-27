@@ -23,3 +23,34 @@ or yarn
 yarn add @mcdegens/mcswap-sdk
 
 ```
+
+
+Setup your dapp to utilize the swap methods you want
+```typescript
+import { initializeSwap, SplSwapRequest } from "mcswap/src/Spl";
+import { Connection } from "@solana/web3.js";
+
+import {
+    PhantomWalletAdapter,
+} from "@solana/wallet-adapter-wallets";
+
+async function main() {
+    const phantomAdapter = new PhantomWalletAdapter();
+    const swapRequest: SplSwapRequest = {
+        connection: new Connection(""),
+        provider: phantomAdapter,
+        taker: "",
+        token1Amount: 0,
+        token1Mint: "",
+        token2Amount: 0,
+        token2Mint: "",
+        token3Amount: 0,
+        token3Mint: "",
+        token4Amount: 0,
+        token4Mint: "",
+    }
+
+    const swapTxn = await initializeSwap(swapRequest);
+    console.log(`swap txn ID: ${swapTxn}`);
+}
+```
