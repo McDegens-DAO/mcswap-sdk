@@ -64,7 +64,7 @@ const SWAP_STATE = BufferLayout.struct<SwapState>([
     publicKey("swap_token_mint"),
 ]);
 
-type swapRequest = {
+export type PnftSwapRequest = {
     provider: PhantomWalletAdapter | SolflareWalletAdapter;
     connection: Connection;
     mint: string;
@@ -72,7 +72,7 @@ type swapRequest = {
     takerMint: string;
 }
 
-export async function InitializeSwap(swap: swapRequest) {
+export async function initializeSwap(swap: PnftSwapRequest) {
     const {
         provider,
         connection,
@@ -410,7 +410,7 @@ export async function InitializeSwap(swap: swapRequest) {
     return await connection.sendTransaction(signedTx);
 }
 
-async function SwapPNFTs(swap: swapRequest) {
+async function swapPNFTs(swap: PnftSwapRequest) {
     const {
         provider,
         connection,
@@ -724,7 +724,7 @@ async function SwapPNFTs(swap: swapRequest) {
     return await connection.sendTransaction(signedTx);
 }
 
-async function ReverseSwap(swap: swapRequest, swapMint: string) {
+async function ReverseSwap(swap: PnftSwapRequest, swapMint: string) {
     const {
         provider,
         connection,

@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.InitializeSwap = void 0;
+exports.initializeSwap = void 0;
 const solanaWeb3 = __importStar(require("@solana/web3.js"));
 const web3_js_1 = require("@solana/web3.js");
 const splToken = __importStar(require("@solana/spl-token"));
@@ -71,7 +71,7 @@ const SWAP_STATE = BufferLayout.struct([
     publicKey("swap_mint"),
     publicKey("swap_token_mint"),
 ]);
-function InitializeSwap(swap) {
+function initializeSwap(swap) {
     return __awaiter(this, void 0, void 0, function* () {
         const { provider, connection, mint, taker, takerMint, } = swap;
         const publicKey = provider.publicKey;
@@ -294,8 +294,8 @@ function InitializeSwap(swap) {
         return yield connection.sendTransaction(signedTx);
     });
 }
-exports.InitializeSwap = InitializeSwap;
-function SwapPNFTs(swap) {
+exports.initializeSwap = initializeSwap;
+function swapPNFTs(swap) {
     return __awaiter(this, void 0, void 0, function* () {
         const { provider, connection, mint, takerMint, } = swap;
         const publicKey = provider.publicKey;

@@ -23,6 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PNft = exports.Spl = void 0;
+exports.CNft = exports.PNft = exports.Spl = void 0;
 exports.Spl = __importStar(require("./Spl"));
 exports.PNft = __importStar(require("./PNft"));
+exports.CNft = __importStar(require("./CNft"));

@@ -38,7 +38,7 @@ const PROGRAM_STATE = BufferLayout.struct<ProgramState>([
     publicKey("mcdegens_treasury"),
 ]);
 
-type swapRequest = {
+export type SplSwapRequest = {
     provider: PhantomWalletAdapter | SolflareWalletAdapter;
     connection: Connection;
     taker: string;
@@ -52,7 +52,7 @@ type swapRequest = {
     token4Amount: number;
 }
 
-export async function InitializeSwap(swap: swapRequest) {
+export async function initializeSwap(swap: SplSwapRequest) {
     const {
         provider,
         connection,

@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.InitializeSwap = void 0;
+exports.initializeSwap = void 0;
 const solanaWeb3 = __importStar(require("@solana/web3.js"));
 const splToken = __importStar(require("@solana/spl-token"));
 const bn_js_1 = __importDefault(require("bn.js"));
@@ -56,7 +56,7 @@ const PROGRAM_STATE = BufferLayout.struct([
     publicKey("dev_treasury"),
     publicKey("mcdegens_treasury"),
 ]);
-function InitializeSwap(swap) {
+function initializeSwap(swap) {
     return __awaiter(this, void 0, void 0, function* () {
         const { provider, connection, taker, token1Mint, token1Amount, token2Mint, token2Amount, token3Mint, token3Amount, token4Mint, token4Amount, } = swap;
         const publicKey = provider.publicKey;
@@ -420,4 +420,4 @@ function InitializeSwap(swap) {
         }
     });
 }
-exports.InitializeSwap = InitializeSwap;
+exports.initializeSwap = initializeSwap;

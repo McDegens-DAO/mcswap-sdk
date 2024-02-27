@@ -1,9 +1,15 @@
 {
   "name": "mcswap",
-  "version": "0.0.2-alpha",
+  "version": "0.0.3-alpha",
   "description": "",
   "repository": {
     "url": "https://github.com/LukasDeco/mcswap"
+  },
+  "type": "commonjs",
+  "exports": {
+    "./cnft": "./src/CNft.js",
+    "./pnft": "./src/PNft.js",
+    "./spl": "./src/Spl.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -24,11 +30,14 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "@metaplex-foundation/mpl-bubblegum": "^3.1.2",
     "@metaplex-foundation/mpl-token-metadata": "^3.2.0",
     "@solana/buffer-layout": "^4.0.1",
+    "@solana/spl-account-compression": "^0.2.0",
     "@solana/spl-token": "^0.4.1",
     "@solana/wallet-adapter-wallets": "^0.19.26",
     "@solana/web3.js": "^1.90.0",
+    "axios": "^1.6.7",
     "bs58": "^5.0.0"
   }
 }
