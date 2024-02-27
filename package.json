@@ -2,7 +2,6 @@
   "name": "mcswap",
   "version": "0.0.1-alpha",
   "description": "",
-  "main": "index.js",
   "repository": {
     "url": "https://github.com/LukasDeco/mcswap"
   },
@@ -14,6 +13,10 @@
     "Solana",
     "McSwap"
   ],
+  "files": [
+    "/src"
+  ],
+  "main": "src/index.js",
   "author": "Lukas deConantsesznak",
   "license": "ISC",
   "devDependencies": {
