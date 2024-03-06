@@ -122,15 +122,7 @@ export async function initializeSwap(swap: CnftSwapRequest): Promise<void | stri
     let swapTokens = 100000000;
     const heliusUrl = "https://rpc.helius.xyz/?api-key=" + heliusApiKey;
 
-
-    // let cNFTSwapProgramId = new solanaWeb3.PublicKey("ABDXeLg3NiQKf7xRyEjZ3HTCTP1dWezCAjVmxJ8NdWz1"); // v0
-    // let cNFTSwapProgramId = new solanaWeb3.PublicKey("8Tg1SpWz9JNr5praJssiALNs3G6GQU5qvuoxf85aRh74"); // v1
-
-
     // HERE  now reading the following 3 vars from program state
-    // let devTreasury = new solanaWeb3.PublicKey("2Gs1H87sQDmHS91iXaVQnhdWTGzsgo2vypAwdDRJTLqX");
-    // let mcDegensTreasury = new solanaWeb3.PublicKey("GUFxwDrsLzSQ27xxTVe4y9BARZ6cENWmjzwe8XPy7AKu");
-    // let feeLamports = 25_000_000;
     let programStatePDA = solanaWeb3.PublicKey.findProgramAddressSync(
         [Buffer.from("cNFT-program-state")],
         cNFTSwapProgramId
@@ -340,34 +332,37 @@ export async function initializeSwap(swap: CnftSwapRequest): Promise<void | stri
     } else {
         uarray[counter++] = 0;
     }
-
+    let arr: any[];
     let assetIdb58 = bs58.decode(assetId);
-    var arr = Array.prototype.slice.call(Buffer.from(assetIdb58), 0);
+    arr = Array.prototype.slice.call(Buffer.from(assetIdb58), 0);
     for (let i = 0; i < arr.length; i++) {
         uarray[counter++] = arr[i];
     }
 
     let rootb58 = bs58.decode(getAssetProof.data.result.root);
-    var arr = Array.prototype.slice.call(Buffer.from(rootb58), 0);
+    arr = Array.prototype.slice.call(Buffer.from(rootb58), 0);
     for (let i = 0; i < arr.length; i++) {
         uarray[counter++] = arr[i];
     }
 
     let datahashb58 = bs58.decode(getAsset.data.result.compression.data_hash);
-    var arr = Array.prototype.slice.call(Buffer.from(datahashb58), 0);
+    arr = Array.prototype.slice.call(Buffer.from(datahashb58), 0);
     for (let i = 0; i < arr.length; i++) {
         uarray[counter++] = arr[i];
     }
 
     let creatorhashb58 = bs58.decode(getAsset.data.result.compression.creator_hash);
-    var arr = Array.prototype.slice.call(Buffer.from(creatorhashb58), 0);
+    arr = Array.prototype.slice.call(Buffer.from(creatorhashb58), 0);
     for (let i = 0; i < arr.length; i++) {
         uarray[counter++] = arr[i];
     }
 
-    var byteArray = [0, 0, 0, 0, 0, 0, 0, 0];
-    for (var index = 0; index < byteArray.length; index++) {
-        var byte = getAsset.data.result.compression.leaf_id & 0xff;
+    let byteArray;
+    let index;
+
+    byteArray = [0, 0, 0, 0, 0, 0, 0, 0];
+    for ( index = 0; index < byteArray.length; index ++ ) {
+        const byte = getAsset.data.result.compression.leaf_id & 0xff;
         byteArray[index] = byte;
         getAsset.data.result.compression.leaf_id = (getAsset.data.result.compression.leaf_id - byte) / 256;
     }
@@ -376,46 +371,46 @@ export async function initializeSwap(swap: CnftSwapRequest): Promise<void | stri
     }
 
     let swapAssetIdb58 = bs58.decode(swapAssetId);
-    var arr = Array.prototype.slice.call(Buffer.from(swapAssetIdb58), 0);
+    arr = Array.prototype.slice.call(Buffer.from(swapAssetIdb58), 0);
     for (let i = 0; i < arr.length; i++) {
         uarray[counter++] = arr[i];
     }
 
     // HERE
     let swapTreeId58 = bs58.decode(swapTreeId);
-    var arr = Array.prototype.slice.call(Buffer.from(swapTreeId58), 0);
+    arr = Array.prototype.slice.call(Buffer.from(swapTreeId58), 0);
     for (let i = 0; i < arr.length; i++) {
         uarray[counter++] = arr[i];
     }
 
     let swapAssetRootb58 = bs58.decode(swapRoot);
-    var arr = Array.prototype.slice.call(Buffer.from(swapAssetRootb58), 0);
+    arr = Array.prototype.slice.call(Buffer.from(swapAssetRootb58), 0);
     for (let i = 0; i < arr.length; i++) {
         uarray[counter++] = arr[i];
     }
 
     let swapAssetDatahashb58 = bs58.decode(swapDatahash);
-    var arr = Array.prototype.slice.call(Buffer.from(swapAssetDatahashb58), 0);
+    arr = Array.prototype.slice.call(Buffer.from(swapAssetDatahashb58), 0);
     for (let i = 0; i < arr.length; i++) {
         uarray[counter++] = arr[i];
     }
 
     let swapAssetCreatorhashb58 = bs58.decode(swapCreatorhash);
-    var arr = Array.prototype.slice.call(Buffer.from(swapAssetCreatorhashb58), 0);
+    arr = Array.prototype.slice.call(Buffer.from(swapAssetCreatorhashb58), 0);
     for (let i = 0; i < arr.length; i++) {
         uarray[counter++] = arr[i];
     }
 
     // HERE
     let swapAssetOwnerb58 = bs58.decode(swapAssetOwner);
-    var arr = Array.prototype.slice.call(Buffer.from(swapAssetOwnerb58), 0);
+    arr = Array.prototype.slice.call(Buffer.from(swapAssetOwnerb58), 0);
     for (let i = 0; i < arr.length; i++) {
         uarray[counter++] = arr[i];
     }
 
     // HERE
     let swapDelegateb58 = bs58.decode(swapDelegate);
-    var arr = Array.prototype.slice.call(Buffer.from(swapDelegateb58), 0);
+    arr = Array.prototype.slice.call(Buffer.from(swapDelegateb58), 0);
     for (let i = 0; i < arr.length; i++) {
         uarray[counter++] = arr[i];
     }
@@ -434,7 +429,7 @@ export async function initializeSwap(swap: CnftSwapRequest): Promise<void | stri
     }
 
     let swapTokenMintb58 = bs58.decode(swapTokenMint.toString());
-    var arr = Array.prototype.slice.call(Buffer.from(swapTokenMintb58), 0);
+    arr = Array.prototype.slice.call(Buffer.from(swapTokenMintb58), 0);
     for (let i = 0; i < arr.length; i++) {
         uarray[counter++] = arr[i];
     }
@@ -476,65 +471,83 @@ export async function initializeSwap(swap: CnftSwapRequest): Promise<void | stri
         keys: keys,
     });
 
-    const slot = await connection.getSlot();
-    const [createALTIx, lookupTableAddress] =
+    let msLookupTable = new solanaWeb3.PublicKey("6rztYc8onxK3FUku97XJrzvdZHqWavwx5xw8fB7QufCA"); // mainnet
+    let lookupTableAccount: solanaWeb3.AddressLookupTableAccount | null = null;
+    if (proof.length > 3) {
+        const slot = await connection.getSlot();
+        const [createALTIx, lookupTableAddress] =
         solanaWeb3.AddressLookupTableProgram.createLookupTable({
             authority: provider.publicKey,
             payer: provider.publicKey,
             recentSlot: slot,
         });
+        console.log("Lookup Table Address", lookupTableAddress.toBase58(), lookupTableAddress);
 
-    let proofPubkeys = [];
-    for (let i = 0; i < proof.length; i++) {
-        proofPubkeys.push(proof[i].pubkey);
+        let proofPubkeys = [];
+        for (let i = 0; i < proof.length; i++) {
+            proofPubkeys.push(proof[i].pubkey);
+        }
+        console.log("proofPubkeys ", proofPubkeys);
+
+        const extendALTIx = solanaWeb3.AddressLookupTableProgram.extendLookupTable({
+            payer: provider.publicKey,
+            authority: provider.publicKey,
+            lookupTable: lookupTableAddress,
+            addresses: [
+                // HERE
+                // cNFTSwapProgramId,
+                // solanaWeb3.SystemProgram.programId,
+                // mplBubblegum.PROGRAM_ID,
+                // solanaAccountCompression.PROGRAM_ID,
+                // solanaAccountCompression.SPL_NOOP_PROGRAM_ID,
+                // swapVaultPDA[0],
+                // devTreasury,
+                // mcDegensTreasury,
+                ...proofPubkeys,
+            ],
+        });
+        console.log("extendALTIx ", extendALTIx);
+
+        const msLookupTableAccount = await connection
+            .getAddressLookupTable(msLookupTable)
+            .then((res) => res.value);
+        if (!msLookupTableAccount) {
+            console.log("Could not fetch McSwap ALT!");
+            return;
+        }    
+
+        let mcswapMessageV0 = new solanaWeb3.TransactionMessage({
+            payerKey: provider.publicKey,
+            recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
+            instructions: [createALTIx, extendALTIx],
+        }).compileToV0Message([msLookupTableAccount]);
+
+        const createALTTx = new solanaWeb3.VersionedTransaction(mcswapMessageV0);
+        try {
+            let signedTx = await provider.signTransaction(createALTTx);
+            const txId = await connection.sendTransaction(signedTx);
+            console.log("Signature: ", txId)
+            console.log(`https://solscan.io/tx/${txId}?cluster=mainnet`);
+        } catch(error) {
+            console.log("Error: ", error)
+            const errorStr = JSON.stringify(error);
+            const errorP = JSON.parse(errorStr);
+            console.log("Error Logs: ", errorP)
+            return;
+        }
+
+        await new Promise(_ => setTimeout(_, 10000));
+
+        lookupTableAccount = await connection
+            .getAddressLookupTable(lookupTableAddress)
+            .then((res) => res.value);    
+    } else {        
+        lookupTableAccount = await connection
+            .getAddressLookupTable(msLookupTable)
+            .then((res) => res.value);    
     }
-
-    const extendALTIx = solanaWeb3.AddressLookupTableProgram.extendLookupTable({
-        payer: provider.publicKey,
-        authority: provider.publicKey,
-        lookupTable: lookupTableAddress,
-        addresses: [
-            // HERE
-            // cNFTSwapProgramId,
-            // solanaWeb3.SystemProgram.programId,
-            // mplBubblegum.PROGRAM_ID,
-            // solanaAccountCompression.PROGRAM_ID,
-            // solanaAccountCompression.SPL_NOOP_PROGRAM_ID,
-            // swapVaultPDA[0],
-            // devTreasury,
-            // mcDegensTreasury,
-            ...proofPubkeys,
-        ],
-    });
-
-    // let msLookupTable = new solanaWeb3.PublicKey("ETunTW1EtRgZVuUGAhzjmzAWibsJ4h8CYQ13nMVirXtk"); // devnet
-    let msLookupTable = new solanaWeb3.PublicKey("6rztYc8onxK3FUku97XJrzvdZHqWavwx5xw8fB7QufCA"); // mainnet    
-    const msLookupTableAccount = await connection
-        .getAddressLookupTable(msLookupTable)
-        .then((res) => res.value);
-    if (!msLookupTableAccount) {
-
-        return;
-    }
-
-    let mcswapMessageV0 = new solanaWeb3.TransactionMessage({
-        payerKey: provider.publicKey,
-        recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
-        instructions: [createALTIx, extendALTIx],
-    }).compileToV0Message([msLookupTableAccount]);
-
-    const createALTTx = new solanaWeb3.VersionedTransaction(mcswapMessageV0);
-    let signedTx = await provider.signTransaction(createALTTx);
-    await connection.sendTransaction(signedTx);
-
-    // we wait for an update...
-    await new Promise(_ => setTimeout(_, 10000));
-
-    const lookupTableAccount = await connection
-        .getAddressLookupTable(lookupTableAddress)
-        .then((res) => res.value);
     if (!lookupTableAccount) {
-
+        console.log("Could not fetch ALT!");
         return;
     }
 
