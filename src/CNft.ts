@@ -94,11 +94,11 @@ export type CnftSwapRequest = {
   swapAssetId: string;
   assetId: string;
   swapLamports: number;
-  heliusApiKey: string;
+  rpcNodeUrl: string;
 };
 
 export async function initializeSwap(swap: CnftSwapRequest): Promise<void | string> {
-  const { provider, connection, taker, swapAssetId, assetId, swapLamports, heliusApiKey } = swap;
+  const { provider, connection, taker, swapAssetId, assetId, swapLamports, rpcNodeUrl } = swap;
 
   const isSwap = swapAssetId === EMPTY_ADDRESS;
 
@@ -108,7 +108,6 @@ export async function initializeSwap(swap: CnftSwapRequest): Promise<void | stri
   }
   let swapTokenMint = new solanaWeb3.PublicKey('AVm6WLmMuzdedAMjpXLYmSGjLLPPjjVWNuR6JJhJLWn3');
   let swapTokens = 100000000;
-  const heliusUrl = 'https://rpc.helius.xyz/?api-key=' + heliusApiKey;
 
   // HERE  now reading the following 3 vars from program state
   let programStatePDA = solanaWeb3.PublicKey.findProgramAddressSync(
@@ -133,10 +132,10 @@ export async function initializeSwap(swap: CnftSwapRequest): Promise<void | stri
   }
 
   const axiosInstance = axios.create({
-    baseURL: heliusUrl,
+    baseURL: rpcNodeUrl,
   });
 
-  const getAsset = await axiosInstance.post(heliusUrl, {
+  const getAsset = await axiosInstance.post(rpcNodeUrl, {
     jsonrpc: '2.0',
     method: 'getAsset',
     id: 'rpd-op-123',
@@ -154,7 +153,7 @@ export async function initializeSwap(swap: CnftSwapRequest): Promise<void | stri
     return;
   }
 
-  const getAssetProof = await axiosInstance.post(heliusUrl, {
+  const getAssetProof = await axiosInstance.post(rpcNodeUrl, {
     jsonrpc: '2.0',
     method: 'getAssetProof',
     id: 'rpd-op-123',
@@ -188,7 +187,7 @@ export async function initializeSwap(swap: CnftSwapRequest): Promise<void | stri
   let swapRoot = '11111111111111111111111111111111';
   let swapProof = null;
   if (isSwap == true) {
-    let getSwapAsset = await axiosInstance.post(heliusUrl, {
+    let getSwapAsset = await axiosInstance.post(rpcNodeUrl, {
       jsonrpc: '2.0',
       method: 'getAsset',
       id: 'rpd-op-123',
@@ -206,7 +205,7 @@ export async function initializeSwap(swap: CnftSwapRequest): Promise<void | stri
     swapCreatorhash = getSwapAsset.data.result.compression.creator_hash;
     swapLeafId = getSwapAsset.data.result.compression.leaf_id;
 
-    const getSwapAssetProof = await axiosInstance.post(heliusUrl, {
+    const getSwapAssetProof = await axiosInstance.post(rpcNodeUrl, {
       jsonrpc: '2.0',
       method: 'getAssetProof',
       id: 'rpd-op-123',
@@ -556,7 +555,7 @@ export async function initializeSwap(swap: CnftSwapRequest): Promise<void | stri
 }
 
 async function swapcNFTs(swap: CnftSwapRequest): Promise<void | string> {
-  const { provider, connection, swapAssetId, assetId, heliusApiKey } = swap;
+  const { provider, connection, swapAssetId, assetId, rpcNodeUrl } = swap;
 
   let isSwap = swapAssetId === EMPTY_ADDRESS;
 
@@ -564,9 +563,6 @@ async function swapcNFTs(swap: CnftSwapRequest): Promise<void | string> {
   if (!publicKey) {
     throw new Error('wallet pubkey is missing from swap request');
   }
-
-  // these are passed
-  const heliusUrl = 'https://rpc.helius.xyz/?api-key=' + heliusApiKey;
 
   // HERE  now reading the following 3 vars from program state
   // let devTreasury = new solanaWeb3.PublicKey("2Gs1H87sQDmHS91iXaVQnhdWTGzsgo2vypAwdDRJTLqX");
@@ -629,10 +625,10 @@ async function swapcNFTs(swap: CnftSwapRequest): Promise<void | string> {
   }
 
   const axiosInstance = axios.create({
-    baseURL: heliusUrl,
+    baseURL: rpcNodeUrl,
   });
 
-  const getAsset = await axiosInstance.post(heliusUrl, {
+  const getAsset = await axiosInstance.post(rpcNodeUrl, {
     jsonrpc: '2.0',
     method: 'getAsset',
     id: 'rpd-op-123',
@@ -641,7 +637,7 @@ async function swapcNFTs(swap: CnftSwapRequest): Promise<void | string> {
     },
   });
 
-  const getAssetProof = await axiosInstance.post(heliusUrl, {
+  const getAssetProof = await axiosInstance.post(rpcNodeUrl, {
     jsonrpc: '2.0',
     method: 'getAssetProof',
     id: 'rpd-op-123',
@@ -674,7 +670,7 @@ async function swapcNFTs(swap: CnftSwapRequest): Promise<void | string> {
   let swapTreeAuthorityPDA = new solanaWeb3.PublicKey('11111111111111111111111111111111');
   let swapProof = null;
   if (isSwap == true) {
-    const getSwapAsset = await axiosInstance.post(heliusUrl, {
+    const getSwapAsset = await axiosInstance.post(rpcNodeUrl, {
       jsonrpc: '2.0',
       method: 'getAsset',
       id: 'rpd-op-123',
@@ -686,7 +682,7 @@ async function swapcNFTs(swap: CnftSwapRequest): Promise<void | string> {
     swapCreatorhash = getSwapAsset.data.result.compression.creator_hash;
     swapLeafId = getSwapAsset.data.result.compression.leaf_id;
 
-    const getSwapAssetProof = await axiosInstance.post(heliusUrl, {
+    const getSwapAssetProof = await axiosInstance.post(rpcNodeUrl, {
       jsonrpc: '2.0',
       method: 'getAssetProof',
       id: 'rpd-op-123',
@@ -1031,14 +1027,12 @@ async function swapcNFTs(swap: CnftSwapRequest): Promise<void | string> {
 }
 
 async function reverseSwap(swap: CnftSwapRequest, swapMint: string) {
-  const { provider, connection, swapAssetId, assetId, heliusApiKey } = swap;
+  const { provider, connection, swapAssetId, assetId, rpcNodeUrl } = swap;
 
   const publicKey = provider.publicKey;
   if (!publicKey) {
     throw new Error('wallet pubkey is missing from swap request');
   }
-
-  const heliusUrl = 'https://rpc.helius.xyz/?api-key=' + heliusApiKey;
 
   let swapStatePDA = solanaWeb3.PublicKey.findProgramAddressSync(
     [
@@ -1059,10 +1053,10 @@ async function reverseSwap(swap: CnftSwapRequest, swapMint: string) {
   }
 
   const axiosInstance = axios.create({
-    baseURL: heliusUrl,
+    baseURL: rpcNodeUrl,
   });
 
-  const getAsset = await axiosInstance.post(heliusUrl, {
+  const getAsset = await axiosInstance.post(rpcNodeUrl, {
     jsonrpc: '2.0',
     method: 'getAsset',
     id: 'rpd-op-123',
@@ -1071,7 +1065,7 @@ async function reverseSwap(swap: CnftSwapRequest, swapMint: string) {
     },
   });
 
-  const getAssetProof = await axiosInstance.post(heliusUrl, {
+  const getAssetProof = await axiosInstance.post(rpcNodeUrl, {
     jsonrpc: '2.0',
     method: 'getAssetProof',
     id: 'rpd-op-123',
@@ -1160,5 +1154,37 @@ async function reverseSwap(swap: CnftSwapRequest, swapMint: string) {
       skipPreflight: false,
       preflightCommitment: 'confirmed',
     });
+  }
+}
+
+async function proofsRequired(id: string, rpcNodeUrl: string) {
+  if (id.length < 32) {
+    return false;
+  }
+  let connection = new solanaWeb3.Connection(rpcNodeUrl, 'confirmed');
+  let axiosInstance = axios.create({
+    baseURL: rpcNodeUrl,
+  });
+  let response = await axiosInstance.post(rpcNodeUrl, {
+    jsonrpc: '2.0',
+    method: 'getAssetProof',
+    id: 'rpd-op-123',
+    params: {
+      id: id,
+    },
+  });
+  if (typeof response.data.result.tree_id == 'undefined') {
+    return false;
+  } else {
+    let ck_treeId = response.data.result.tree_id;
+    let ck_Proof = response.data.result.proof;
+    let ck_Root = response.data.result.root;
+    let ck_treeIdPubKey = new solanaWeb3.PublicKey(ck_treeId);
+    let treeAccount = await solanaAccountCompression.ConcurrentMerkleTreeAccount.fromAccountAddress(
+      connection,
+      ck_treeIdPubKey,
+    );
+    let treeAuthority = treeAccount.getAuthority();
+    return response.data.result.proof.length - treeAccount.getCanopyDepth();
   }
 }
