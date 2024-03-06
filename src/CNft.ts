@@ -87,6 +87,9 @@ const SWAP_STATE = BufferLayout.struct<SwapState>([
   uint64('swap_tokens'),
 ]);
 
+/**
+ * rpcNodeUrl must be compatible with cNFTs
+ */
 export type CnftSwapRequest = {
   provider: PhantomWalletAdapter | SolflareWalletAdapter;
   connection: Connection;
@@ -298,7 +301,6 @@ export async function initializeSwap(swap: CnftSwapRequest): Promise<void | stri
   // HERE
   var totalSize =
     1 + 1 + 32 + 32 + 32 + 32 + 8 + 32 + 32 + 32 + 32 + 32 + 32 + 32 + 8 + 1 + 8 + 32 + 8;
-  // var totalSize = 1 + 1 + 32 + 32 + 32 + 32 + 8 + 32 + 32 + 32 + 32 + 8 + 1 + 8 + 32 + 8;
 
   var uarray = new Uint8Array(totalSize);
   let counter = 0;
@@ -564,11 +566,6 @@ async function swapcNFTs(swap: CnftSwapRequest): Promise<void | string> {
     throw new Error('wallet pubkey is missing from swap request');
   }
 
-  // HERE  now reading the following 3 vars from program state
-  // let devTreasury = new solanaWeb3.PublicKey("2Gs1H87sQDmHS91iXaVQnhdWTGzsgo2vypAwdDRJTLqX");
-  // let mcDegensTreasury = new solanaWeb3.PublicKey("GUFxwDrsLzSQ27xxTVe4y9BARZ6cENWmjzwe8XPy7AKu");
-  // let feeLamports = 25_000_000;
-
   let programStatePDA = solanaWeb3.PublicKey.findProgramAddressSync(
     [Buffer.from('cNFT-program-state')],
     cNFTSwapProgramId,
@@ -750,43 +747,6 @@ async function swapcNFTs(swap: CnftSwapRequest): Promise<void | string> {
     splToken.TOKEN_PROGRAM_ID,
     splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
   );
-
-  // HERE  No longer needed
-  // const tempTokenAccount = new solanaWeb3.Keypair();
-  // let createTempTokenAccountIx = null;
-  // let initTempTokenAccountIx = null;
-  // let transferTokenIx = null;
-  // if (swapTokens > 0) {
-  //
-  //     createTempTokenAccountIx = solanaWeb3.SystemProgram.createAccount({
-  //         programId: splToken.TOKEN_PROGRAM_ID,
-  //         space: splToken.AccountLayout.span,
-  //         lamports: await connection.getMinimumBalanceForRentExemption(
-  //             splToken.AccountLayout.span
-  //         ),
-  //         fromPubkey: provider.publicKey,
-  //         newAccountPubkey: tempTokenAccount.publicKey,
-  //     });
-  //
-
-  //     initTempTokenAccountIx = splToken.createInitializeAccountInstruction(
-  //         tempTokenAccount.publicKey,
-  //         swapTokenMint,
-  //         tempTokenAccount.publicKey,
-  //         splToken.TOKEN_PROGRAM_ID
-  //     );
-  //
-
-  //     transferTokenIx = splToken.createTransferInstruction(
-  //         providerTokenATA,
-  //         tempTokenAccount.publicKey,
-  //         provider.publicKey,
-  //         parseInt(swapTokens),
-  //         provider.publicKey,
-  //         splToken.TOKEN_PROGRAM_ID,
-  //     )
-  //
-  // }
 
   const initializerTokenATA = await splToken.getAssociatedTokenAddress(
     swapTokenMint,
@@ -1156,10 +1116,15 @@ async function reverseSwap(swap: CnftSwapRequest, swapMint: string) {
     });
   }
 }
-
+/**
+ * proofsRequired
+ * @param id string
+ * @param rpcNodeUrl string - needs to be an RPC that supports cNFTs
+ * @returns
+ */
 async function proofsRequired(id: string, rpcNodeUrl: string) {
   if (id.length < 32) {
-    return false;
+    throw new Error('id under 32 characters for proofsRequired');
   }
   let connection = new solanaWeb3.Connection(rpcNodeUrl, 'confirmed');
   let axiosInstance = axios.create({
@@ -1174,7 +1139,7 @@ async function proofsRequired(id: string, rpcNodeUrl: string) {
     },
   });
   if (typeof response.data.result.tree_id == 'undefined') {
-    return false;
+    throw new Error('asset proof tree_id is undefined');
   } else {
     let ck_treeId = response.data.result.tree_id;
     let ck_Proof = response.data.result.proof;
