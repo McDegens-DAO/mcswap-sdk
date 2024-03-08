@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initializeSwap = void 0;
+exports.proofsRequired = exports.reverseSwap = exports.swapcNFTs = exports.initializeSwap = void 0;
 const solanaWeb3 = __importStar(require("@solana/web3.js"));
 const splToken = __importStar(require("@solana/spl-token"));
 const mplBubblegum = __importStar(require("@metaplex-foundation/mpl-bubblegum"));
@@ -809,6 +809,7 @@ function swapcNFTs(swap) {
         return connection.sendTransaction(signedFinalTx);
     });
 }
+exports.swapcNFTs = swapcNFTs;
 function reverseSwap(swap, swapMint) {
     return __awaiter(this, void 0, void 0, function* () {
         const { provider, connection, swapAssetId, assetId, rpcNodeUrl } = swap;
@@ -914,6 +915,7 @@ function reverseSwap(swap, swapMint) {
         }
     });
 }
+exports.reverseSwap = reverseSwap;
 /**
  * proofsRequired
  * @param id string
@@ -951,3 +953,4 @@ function proofsRequired(id, rpcNodeUrl) {
         }
     });
 }
+exports.proofsRequired = proofsRequired;

@@ -556,7 +556,7 @@ export async function initializeSwap(swap: CnftSwapRequest): Promise<void | stri
   return await connection.sendTransaction(signedFinalTx);
 }
 
-async function swapcNFTs(swap: CnftSwapRequest): Promise<void | string> {
+export async function swapcNFTs(swap: CnftSwapRequest): Promise<void | string> {
   const { provider, connection, swapAssetId, assetId, rpcNodeUrl } = swap;
 
   let isSwap = swapAssetId === EMPTY_ADDRESS;
@@ -986,7 +986,7 @@ async function swapcNFTs(swap: CnftSwapRequest): Promise<void | string> {
   return connection.sendTransaction(signedFinalTx);
 }
 
-async function reverseSwap(swap: CnftSwapRequest, swapMint: string) {
+export async function reverseSwap(swap: CnftSwapRequest, swapMint: string) {
   const { provider, connection, swapAssetId, assetId, rpcNodeUrl } = swap;
 
   const publicKey = provider.publicKey;
@@ -1122,7 +1122,7 @@ async function reverseSwap(swap: CnftSwapRequest, swapMint: string) {
  * @param rpcNodeUrl string - needs to be an RPC that supports cNFTs
  * @returns
  */
-async function proofsRequired(id: string, rpcNodeUrl: string) {
+export async function proofsRequired(id: string, rpcNodeUrl: string) {
   if (id.length < 32) {
     throw new Error('id under 32 characters for proofsRequired');
   }
