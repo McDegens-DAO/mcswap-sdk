@@ -5,7 +5,7 @@
   "repository": {
     "url": "https://github.com/LukasDeco/mcswap"
   },
-  "type": "commonjs",
+  "type": "module",
   "exports": {
     "cnft": "./src/CNft.js",
     "pnft": "./src/PNft.js",
@@ -27,6 +27,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/bs58": "^4.0.4",
+    "esbuild": "0.20.1",
     "typescript": "^5.3.3"
   },
   "dependencies": {
