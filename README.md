@@ -1,5 +1,7 @@
 # McSwap TypeScript SDK
 
+ATTN! In Development. Do not use in production at this time.
+
 Welcome to the official TypeScript SDK for the McSwap protocol, brought to you by the McDegens DAO. This SDK enables developers to interact seamlessly with McSwap, the flagship dApp of McDegens DAO, for creating trustless peer-to-peer contracts. It supports transactions involving Solana SPL tokens, cNFTs, NFTs, and soon pNFTs, directly from your own TypeScript dapp.
 
 ## Features
